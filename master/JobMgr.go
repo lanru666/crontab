@@ -7,7 +7,7 @@ import (
 )
 
 // 任务管理器
-type jobMgr struct {
+type JobMgr struct {
 	client *clientv3.Client
 	kv     clientv3.KV
 	lease  clientv3.Lease
@@ -15,7 +15,7 @@ type jobMgr struct {
 
 var (
 	//单例
-	G_jobMgr *jobMgr
+	G_jobMgr *JobMgr
 )
 
 func InitJobMgr() (err error) {
@@ -39,10 +39,14 @@ func InitJobMgr() (err error) {
 	kv = clientv3.NewKV(client)
 	lease = clientv3.NewLease(client)
 	// 赋值单例
-	G_jobMgr = &jobMgr{
+	G_jobMgr = &JobMgr{
 		client: client,
 		kv:     kv,
 		lease:  lease,
 	}
 	return
+}
+
+func (jobMgr *JobMgr) SaveJob() {
+
 }
