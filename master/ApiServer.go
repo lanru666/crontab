@@ -3,6 +3,7 @@ package master
 import (
 	"net"
 	"net/http"
+	"strconv"
 	"time"
 )
 
@@ -31,7 +32,7 @@ func InitApiServer() (err error) {
 	mux = http.NewServeMux()
 	mux.HandleFunc("/job/save", handleJobSave)
 	//启动TCP监听
-	if listener, err = net.Listen("tcp", ":"+string(G_config.ApiPort)); err != nil {
+	if listener, err = net.Listen("tcp", ":"+strconv.Itoa(G_config.ApiPort)); err != nil {
 		return
 	}
 	// 创建一个HTTP服务

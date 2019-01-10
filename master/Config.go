@@ -2,6 +2,7 @@ package master
 
 import (
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 )
 
@@ -32,5 +33,6 @@ func InitConfig(filename string) (err error) {
 	}
 	//3、赋值单例
 	G_config = &conf
+	fmt.Println(conf)
 	return
 }
