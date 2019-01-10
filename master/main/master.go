@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/lanru666/crontab/master"
 	"runtime"
+	"time"
 )
 
 var (
@@ -42,6 +43,9 @@ func main() {
 		goto ERR
 	}
 	// 正常退出
+	for {
+		time.Sleep(1 * time.Second)
+	}
 	return
 ERR:
 	fmt.Println(err)

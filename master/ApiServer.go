@@ -19,7 +19,7 @@ var (
 )
 
 // 保存任务接口
-// POST job = {"name":"job1","command":"echo hello","confExpr":"* * * * * *"}
+// POST job = {"name":"job1","command":"echo hello","cronExpr":"* * * * * *"}
 func handleJobSave(resp http.ResponseWriter, req *http.Request) {
 	var (
 		err     error
