@@ -2,6 +2,7 @@ package master
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/lanru666/crontab/common"
 	"net"
 	"net/http"
@@ -21,6 +22,7 @@ var (
 // 保存任务接口
 // POST job = {"name":"job1","command":"echo hello","cronExpr":"* * * * * *"}
 func handleJobSave(resp http.ResponseWriter, req *http.Request) {
+	fmt.Println("handleJobSave")
 	var (
 		err     error
 		postJob string
@@ -43,13 +45,13 @@ func handleJobSave(resp http.ResponseWriter, req *http.Request) {
 		goto ERR
 	}
 	// 5、返回正常应答
-	if bytes, err = common.BuildResponse(0, "success", oldJob); err != nil {
+	if bytes, err = common.BuildResponse(0, "success", oldJob); err == nil {
 		resp.Write(bytes)
 	}
 	return
 ERR:
 	// 6、返回异常应答
-	if bytes, err = common.BuildResponse(-1, err.Error(), nil); err != nil {
+	if bytes, err = common.BuildResponse(-1, err.Error(), nil); err == nil {
 		resp.Write(bytes)
 	}
 }
