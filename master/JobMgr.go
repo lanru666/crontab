@@ -18,7 +18,7 @@ var (
 	G_jobMgr *jobMgr
 )
 
-func InitJobMgr(err error) {
+func InitJobMgr() (err error) {
 	var (
 		config clientv3.Config
 		client *clientv3.Client
@@ -27,8 +27,8 @@ func InitJobMgr(err error) {
 	)
 	//初始化配置
 	config = clientv3.Config{
-		Endpoints:   []string{""},            //集群地址
-		DialTimeout: 5000 * time.Millisecond, //连接超时
+		Endpoints:   G_config.EtcdEndPoints,                                     //集群地址
+		DialTimeout: time.Duration(G_config.EtcdDialTimeout) * time.Millisecond, //连接超时
 	}
 	// 建立连接
 	if client, err = clientv3.New(config); err != nil {
