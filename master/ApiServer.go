@@ -36,8 +36,8 @@ func InitApiServer() (err error) {
 	}
 	// 创建一个HTTP服务
 	httpSerer = &http.Server{
-		ReadTimeout:  5 * time.Second,
-		WriteTimeout: 5 * time.Second,
+		ReadTimeout:  time.Duration(G_config.ApiReadTimeout) * time.Millisecond,
+		WriteTimeout: time.Duration(G_config.ApiWriteTimeout) * time.Millisecond,
 		Handler:      mux,
 	}
 	// 赋值单例
