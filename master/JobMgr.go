@@ -88,6 +88,7 @@ func (jobMgr *JobMgr) DeleteJob(name string) (oldJob *common.Job, err error) {
 		delResp   *clientv3.DeleteResponse
 		oldJobObj common.Job
 	)
+	jobKey = "/cron/jobs/" + name
 	//etcd中保存任务的key
 	if delResp, err = jobMgr.kv.Delete(context.TODO(), jobKey, clientv3.WithPrevKV()); err != nil {
 		return
