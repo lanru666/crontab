@@ -88,6 +88,38 @@ ERR:
 	}
 }
 
+// 列举所有crontab任务
+// GET /job/list
+func handleJobList(resp http.ResponseWriter, req *http.Request) {
+	fmt.Println("handleJobList")
+	var (
+		err    error
+		name   string
+		oldJob *common.Job
+		bytes  []byte
+	)
+	//1、POST:a=1&b=2&c=3
+	if err = req.ParseForm(); err != nil {
+		goto ERR
+	}
+	//2、取删除的任务名
+	name = req.PostForm.Get("name")
+	//3、去删除任务
+	if oldJob, err = G_jobMgr.DeleteJob(name); err != nil {
+		goto ERR
+	}
+	//正常应答
+	if bytes, err = common.BuildResponse(0, "success", oldJob); err == nil {
+		resp.Write(bytes)
+	}
+	return
+ERR:
+	// 6、返回异常应答
+	if bytes, err = common.BuildResponse(-1, err.Error(), nil); err == nil {
+		resp.Write(bytes)
+	}
+}
+
 //初始化服务
 func InitApiServer() (err error) {
 	var (
@@ -99,7 +131,7 @@ func InitApiServer() (err error) {
 	mux = http.NewServeMux()
 	mux.HandleFunc("/job/save", handleJobSave)
 	mux.HandleFunc("/job/delete", handleJobDelete)
-	
+	mux.HandleFunc("/job/list", handleJobList)
 	//启动TCP监听
 	if listener, err = net.Listen("tcp", ":"+strconv.Itoa(G_config.ApiPort)); err != nil {
 		return
