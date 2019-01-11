@@ -59,29 +59,24 @@ ERR:
 // 删除任务接口
 // POST /job/delete  name=job1
 func handleJobDelete(resp http.ResponseWriter, req *http.Request) {
-	fmt.Println("handleJobSave")
+	fmt.Println("handleJobDelete")
 	var (
-		err     error
-		postJob string
-		job     common.Job
-		oldJob  *common.Job
-		bytes   []byte
+		err    error
+		name   string
+		oldJob *common.Job
+		bytes  []byte
 	)
-	//1、解析POST表单
+	//1、POST:a=1&b=2&c=3
 	if err = req.ParseForm(); err != nil {
 		goto ERR
 	}
-	//2、取表单的job字段
-	postJob = req.PostForm.Get("job")
-	//3、反序列化job
-	if err = json.Unmarshal([]byte(postJob), &job); err != nil {
+	//2、取删除的任务名
+	name = req.PostForm.Get("name")
+	//3、去删除任务
+	if oldJob, err = G_jobMgr.DeleteJob(name); err != nil {
 		goto ERR
 	}
-	//4、保存到etcd
-	if oldJob, err = G_jobMgr.SaveJob(&job); err != nil {
-		goto ERR
-	}
-	// 5、返回正常应答
+	//正常应答
 	if bytes, err = common.BuildResponse(0, "success", oldJob); err == nil {
 		resp.Write(bytes)
 	}
