@@ -93,23 +93,15 @@ ERR:
 func handleJobList(resp http.ResponseWriter, req *http.Request) {
 	fmt.Println("handleJobList")
 	var (
-		err    error
-		name   string
-		oldJob *common.Job
-		bytes  []byte
+		jobList []*common.Job
+		err     error
+		bytes   []byte
 	)
-	//1、POST:a=1&b=2&c=3
-	if err = req.ParseForm(); err != nil {
+	if jobList, err = G_jobMgr.ListJobs(); err != nil {
 		goto ERR
 	}
-	//2、取删除的任务名
-	name = req.PostForm.Get("name")
-	//3、去删除任务
-	if oldJob, err = G_jobMgr.DeleteJob(name); err != nil {
-		goto ERR
-	}
-	//正常应答
-	if bytes, err = common.BuildResponse(0, "success", oldJob); err == nil {
+	jobList = jobList
+	if bytes, err = common.BuildResponse(0, "success", jobList); err == nil {
 		resp.Write(bytes)
 	}
 	return
