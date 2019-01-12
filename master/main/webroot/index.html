@@ -76,7 +76,8 @@
                         url: "/job/list",
                         dataType: "json",
                         success: function (resp) {
-                            if (resp.errno != 0) {//服务端出错了
+                            debugger
+                            if (resp.errorno != 0) {//服务端出错了
                                 return
                             }
                             //任务数组
@@ -87,7 +88,6 @@
                             for (var i = 0; i < jobList.length; i++) {
                                 var job = jobList[i];
                                 var tr = $("<tr>")
-                                tr.append($("<td>"))
                                 tr.append($("<td class='job-name'>").html(job.name))
                                 tr.append($("<td class='job-command'>").html(job.command))
                                 tr.append($("<td class='job-cronExpr'>").html(job.cronExpr))
