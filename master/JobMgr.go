@@ -111,8 +111,6 @@ func (jobMgr *JobMgr) KillJob(name string) (err error) {
 	// 更新一下key=/cron/killer/任务名
 	var (
 		killerKey      string
-		putResp        *clientv3.PutResponse
-		oldJobObj      common.Job
 		leaseGrantResp *clientv3.LeaseGrantResponse
 		leaseId        clientv3.LeaseID
 	)
@@ -126,17 +124,10 @@ func (jobMgr *JobMgr) KillJob(name string) (err error) {
 	leaseId = leaseGrantResp.ID
 	leaseId = leaseId
 	// 设置killer标志
-	if putResp, err = jobMgr.kv.Put(context.TODO(), killerKey, "", clientv3.WithLease(leaseId)); err != nil {
+	if _, err = jobMgr.kv.Put(context.TODO(), killerKey, "", clientv3.WithLease(leaseId)); err != nil {
 		return
 	}
 	//返回被删除的任务信息
-	if len(delResp.PrevKvs) != 0 {
-		if err = json.Unmarshal(delResp.PrevKvs[0].Value, &oldJobObj); err != nil {
-			err = nil
-			return
-		}
-		oldJob = &oldJobObj
-	}
 	return
 }
 
