@@ -59,25 +59,24 @@ ERR:
 // 强制杀死任务
 // POST /job/kill  name=job1
 func handleJobKill(resp http.ResponseWriter, req *http.Request) {
-	fmt.Println("handleJobDelete")
+	fmt.Println("handleJobKill")
 	var (
 		err    error
 		name   string
-		oldJob *common.Job
 		bytes  []byte
 	)
 	//1、POST:a=1&b=2&c=3
 	if err = req.ParseForm(); err != nil {
 		goto ERR
 	}
-	//2、取删除的任务名
+	//2、取杀死的任务名
 	name = req.PostForm.Get("name")
 	//3、去删除任务
-	if oldJob, err = G_jobMgr.DeleteJob(name); err != nil {
+	if  err = G_jobMgr.KillJob(name); err != nil {
 		goto ERR
 	}
 	//正常应答
-	if bytes, err = common.BuildResponse(0, "success", oldJob); err == nil {
+	if bytes, err = common.BuildResponse(0, "success", nil); err == nil {
 		resp.Write(bytes)
 	}
 	return
