@@ -93,8 +93,8 @@
                                 tr.append($("<td class='job-cronExpr'>").html(job.cronExpr))
                                 var toolbar = $('<div class="btn-toolbar">')
                                     .append('<button class="btn btn-info edit-job" >编辑</button>')
-                                    .append('<button class="btn btn-info delete-job" >删除</button>')
-                                    .append('<button class="btn btn-info kill-job" >强杀</button>')
+                                    .append('<button class="btn btn-danger delete-job" >删除</button>')
+                                    .append('<button class="btn btn-warning kill-job" >强杀</button>')
                                 tr.append($('<td>').append(toolbar))
                                 $('#job-list tbody').append(tr)
                             }
@@ -102,6 +102,7 @@
                     }
                 )
             }
+            rebuildJobList()
         }
     )
 </script>
