@@ -126,7 +126,6 @@ func (jobMgr *JobMgr) KillJob(name string) (err error) {
 	leaseId = leaseGrantResp.ID
 	leaseId = leaseId
 	// 设置killer标志
-	
 	if putResp, err = jobMgr.kv.Put(context.TODO(), killerKey, "", clientv3.WithLease(leaseId)); err != nil {
 		return
 	}
