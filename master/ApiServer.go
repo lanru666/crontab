@@ -61,9 +61,9 @@ ERR:
 func handleJobKill(resp http.ResponseWriter, req *http.Request) {
 	fmt.Println("handleJobKill")
 	var (
-		err    error
-		name   string
-		bytes  []byte
+		err   error
+		name  string
+		bytes []byte
 	)
 	//1、POST:a=1&b=2&c=3
 	if err = req.ParseForm(); err != nil {
@@ -72,7 +72,7 @@ func handleJobKill(resp http.ResponseWriter, req *http.Request) {
 	//2、取杀死的任务名
 	name = req.PostForm.Get("name")
 	//3、去杀死任务
-	if  err = G_jobMgr.KillJob(name); err != nil {
+	if err = G_jobMgr.KillJob(name); err != nil {
 		goto ERR
 	}
 	//正常应答
@@ -146,9 +146,11 @@ ERR:
 //初始化服务
 func InitApiServer() (err error) {
 	var (
-		mux       *http.ServeMux
-		listener  net.Listener
-		httpSerer *http.Server
+		mux           *http.ServeMux
+		listener      net.Listener
+		httpSerer     *http.Server
+		staticDir     http.Dir     // 静态文件根目录
+		staticHandler http.Handler //静态文件http回调
 	)
 	//配置路由
 	mux = http.NewServeMux()
@@ -156,6 +158,12 @@ func InitApiServer() (err error) {
 	mux.HandleFunc("/job/delete", handleJobDelete)
 	mux.HandleFunc("/job/list", handleJobList)
 	mux.HandleFunc("/job/kill", handleJobKill)
+	//index.html
+	//静态文件目录
+	staticDir = http.Dir(G_config.WebRoot)
+	staticHandler = http.FileServer(staticDir)
+	mux.Handle("/", http.StripPrefix("/", staticHandler))
+	
 	//启动TCP监听
 	if listener, err = net.Listen("tcp", ":"+strconv.Itoa(G_config.ApiPort)); err != nil {
 		return
