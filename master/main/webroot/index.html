@@ -57,15 +57,40 @@
             //1、绑定按钮的事件处理函数
             //用Javascript的委托机制，DOM冒泡事件的一个原理
             $("#job-list").on("click", ".edit-job", function (event) {
+
                 console.log("编辑按钮")
             })
 
             $("#job-list").on("click", ".delete-job", function (event) {
-                console.log("删除按钮")
+                var jobName = $(this).parents("tr").children(".job-name").text()
+                $.ajax(
+                    {
+                        url: "/job/delete",
+                        type: "post",
+                        dataType: "json",
+                        data: {name: jobName},
+                        complete: function () {
+                            window.location.reload()
+                        }
+                    }
+                )
+                console.log(jobName)
             })
 
             $("#job-list").on("click", ".kill-job", function (event) {
-                console.log("强杀按钮")
+                var jobName = $(this).parents("tr").children(".job-name").text()
+                $.ajax(
+                    {
+                        url: "/job/kill",
+                        type: "post",
+                        dataType: "json",
+                        data: {name: jobName},
+                        complete: function () {
+                            window.location.reload()
+                        }
+                    }
+                )
+                console.log(jobName)
             })
 
             // 定义一个函数，用于刷新任务列表
@@ -102,6 +127,7 @@
                     }
                 )
             }
+
             rebuildJobList()
         }
     )
