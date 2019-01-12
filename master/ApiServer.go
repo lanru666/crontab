@@ -71,7 +71,7 @@ func handleJobKill(resp http.ResponseWriter, req *http.Request) {
 	}
 	//2、取杀死的任务名
 	name = req.PostForm.Get("name")
-	//3、去删除任务
+	//3、去杀死任务
 	if  err = G_jobMgr.KillJob(name); err != nil {
 		goto ERR
 	}
