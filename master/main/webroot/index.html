@@ -68,11 +68,51 @@
     $(document).ready(
         function () {
             //1、绑定按钮的事件处理函数
-
             //用Javascript的委托机制，DOM冒泡事件的一个原理
             $("#job-list").on("click", ".edit-job", function (event) {
-                console.log(event)
+                console.log("编辑按钮")
             })
+
+            $("#job-list").on("click", ".delete-job", function (event) {
+                console.log("删除按钮")
+            })
+
+            $("#job-list").on("click", ".kill-job", function (event) {
+                console.log("强杀按钮")
+            })
+
+            // 定义一个函数，用于刷新任务列表
+            function rebuildJobList() {
+                // /job/list
+                $.ajax(
+                    {
+                        url: "/job/list",
+                        dataType: "json",
+                        success: function (resp) {
+                            if (resp.errno != 0) {//服务端出错了
+                                return
+                            }
+                            //任务数组
+                            var jobList = resp.data
+                            //遍历任务,填充table
+                            for (var i = 0; i < jobList.length; i++) {
+                                var job = jobList[i];
+                                var tr = $("<tr>")
+                                tr.append($("<td>"))
+                                tr.append($("<td class='job-name'>").html(job.name))
+                                tr.append($("<td class='job-command'>").html(job.command))
+                                tr.append($("<td class='job-cronExpr'>").html(job.cronExpr))
+                                var toolbar = $('<div class="btn-toolbar">')
+                                    .append('<button class="btn btn-info edit-job" >编辑</button>')
+                                    .append('<button class="btn btn-info delete-job" >删除</button>')
+                                    .append('<button class="btn btn-info kill-job" >强杀</button>')
+
+                            }
+                        }
+                    }
+                )
+
+            }
         }
     )
 </script>
