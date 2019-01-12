@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"github.com/lanru666/crontab/common"
 	"go.etcd.io/etcd/clientv3"
+	"go.etcd.io/etcd/mvcc/mvccpb"
 	"time"
 )
 
@@ -101,6 +102,35 @@ func (jobMgr *JobMgr) DeleteJob(name string) (oldJob *common.Job, err error) {
 			return
 		}
 		oldJob = &oldJobObj
+	}
+	return
+}
+
+// 列举任务etcd的get操作
+func (jobMgr *JobMgr) ListJobs() (jobList []*common.Job, err error) {
+	var (
+		dirKey  string
+		getResp *clientv3.GetResponse
+		kvPair  *mvccpb.KeyValue
+		job     *common.Job
+	)
+	// etcd中任务保存的目录
+	dirKey = common.JOB_SAVE_DIR
+	// etcd中保存任务的key
+	if getResp, err = jobMgr.kv.Get(context.TODO(), dirKey, clientv3.WithPrefix()); err != nil {
+		return
+	}
+	// 初始化数组空间
+	jobList = make([]*common.Job, 0)
+	// len(jobList) = 0
+	// 遍历所有的任务，进行反序列化
+	for _, kvPair = range getResp.Kvs {
+		job = &common.Job{}
+		if err = json.Unmarshal(kvPair.Value, job); err != nil {
+			err = nil
+			continue
+		}
+		jobList = append(jobList, job)
 	}
 	return
 }
