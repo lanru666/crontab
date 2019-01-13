@@ -67,9 +67,10 @@ func (JobMgr *JobMgr) watchJobs() (err error) {
 					//Delete /cron/jobs/job10
 					jobName = common.ExtractJobName(string(watchEvent.Kv.Key))
 					// 构造一个删除Event
-					//TODO:推一个删除事件给scheduler
+					job = &common.Job{Name: jobName}
 					jobEvent = common.BuildJobEvent(common.JOB_EVENT_DELETE, job)
 				}
+				//TODO:推一个删除事件给scheduler
 			}
 		}
 	}()
