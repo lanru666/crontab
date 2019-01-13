@@ -43,7 +43,7 @@ func (JobMgr *JobMgr) watchJobs() (err error) {
 		//反序列化json得到job
 		if job, err = common.UnpackJob(kvpair.Value); err == nil { //有效任务
 			//TODO:把job赋值给scheduler(调度协程)
-			
+			jobEvent = common.BuildJobEvent(common.JOB_EVENT_SAVE, job)
 		}
 	}
 	// 2、从该revision向后监听变化事件
@@ -107,5 +107,7 @@ func InitJobMgr() (err error) {
 		lease:   lease,
 		watcher: watcher,
 	}
+	//启动监听
+	G_jobMgr.watchJobs()
 	return
 }
