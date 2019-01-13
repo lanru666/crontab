@@ -50,20 +50,36 @@
         </div>
     </div>
 </div>
-<div class="modal fade" tabindex="-1" role="dialog">
+<div id="edit-modal" class="modal fade" tabindex="-1" role="dialog">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span>
                 </button>
-                <h4 class="modal-title">Modal title</h4>
+                <h4 class="modal-title">编辑任务</h4>
             </div>
             <div class="modal-body">
-                <p>One fine body&hellip;</p>
+                <form>
+                    <div class="form-group">
+                        <label for="edit-name">任务名称</label>
+                        <input type="text" class="form-control" id="edit-name" placeholder="任务名称">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="edit-command">shell命令</label>
+                        <input type="text" class="form-control" id="edit-command" placeholder="shell命令">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="edit-cronExpr">cron表达式</label>
+                        <input type="text" class="form-control" id="edit-cronExpr" placeholder="cron表达式">
+                    </div>
+
+                </form>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary">Save changes</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                <button type="button" class="btn btn-primary">保存</button>
             </div>
         </div><!-- /.modal-content -->
     </div><!-- /.modal-dialog -->
@@ -75,7 +91,12 @@
             //1、绑定按钮的事件处理函数
             //用Javascript的委托机制，DOM冒泡事件的一个原理
             $("#job-list").on("click", ".edit-job", function (event) {
-
+                //取出当前job的信息，赋值给模态框的input
+                $('#edit-name').val($(this).parents('tr').children('.job-name').text())
+                $('#edit-command').val($(this).parents('tr').children('.job-command').text())
+                $('#edit-cronExpr').val($(this).parents('tr').children('.job-cronExpr').text())
+                $('#edit-modal').modal('show')
+                //
                 console.log("编辑按钮")
             })
 
@@ -119,7 +140,7 @@
                         url: "/job/list",
                         dataType: "json",
                         success: function (resp) {
-                            debugger
+                            // debugger
                             if (resp.errorno != 0) {//服务端出错了
                                 return
                             }
