@@ -103,12 +103,12 @@ func (scheduler *Scheduler) PushJobEvent(jobEvent *common.JobEvent) {
 }
 
 //初始化调度器
-func initScheduler() {
+func InitScheduler() (err error) {
 	G_scheduler = &Scheduler{
 		jobEventChan: make(chan *common.JobEvent, 1000),
 		jobPlanTable: make(map[string]*common.JobSchedulerPlan),
 	}
 	//启动调度协程
 	go G_scheduler.schedulerLoop()
-	
+	return
 }
