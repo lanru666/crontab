@@ -76,7 +76,7 @@ func BuildJobEvent(eventType int, job *Job) (jobEvent *JobEvent) {
 }
 
 //构造任务执行计划
-func BuildJobScheduler(job *Job) (jobSchedulerPLan *JobSchedulerPlan, err error) {
+func BuildJobSchedulerPlan(job *Job) (jobSchedulerPLan *JobSchedulerPlan, err error) {
 	var (
 		expr *cronexpr.Expression
 	)

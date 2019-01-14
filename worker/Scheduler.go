@@ -13,8 +13,17 @@ var (
 )
 // 处理任务事件
 func (scheduler *Scheduler) handleJobEvent(jobEvent *common.JobEvent) {
+	var (
+		jobSchedulerPlan *common.JobSchedulerPlan
+		err              error
+	)
 	switch jobEvent.EventType {
 	case common.JOB_EVENT_SAVE: //保存任务事件
+		if jobSchedulerPlan, err = common.BuildJobSchedulerPlan(jobEvent.Job); err != nil {
+			return
+		}
+		scheduler.jobPlanTable[jobEvent.Job.Name] = jobSchedulerPlan
+		
 	//jobEvent.Job
 	case common.JOB_EVENT_DELETE: //删除任务事件
 	
