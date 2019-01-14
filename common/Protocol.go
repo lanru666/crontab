@@ -64,13 +64,31 @@ func ExtractJobName(jobKey string) (string) {
 
 type JobEvent struct {
 	EventType int // SAVE DELETE
-	job       *Job
+	Job       *Job
 }
 
 //任务变化事件有两种，1) 更新任务 2) 删除任务
 func BuildJobEvent(eventType int, job *Job) (jobEvent *JobEvent) {
 	return &JobEvent{
 		EventType: eventType,
-		job:       job,
+		Job:       job,
 	}
+}
+
+//构造任务执行计划
+func BuildJobScheduler(job *Job) (jobSchedulerPLan *JobSchedulerPlan, err error) {
+	var (
+		expr *cronexpr.Expression
+	)
+	//解析JOB的cron表达式
+	if expr, err = cronexpr.Parse(job.CronExpr); err != nil {
+		return
+	}
+	//生成任务调度计划对象
+	jobSchedulerPLan = &JobSchedulerPlan{
+		Job:      job,
+		Expr:     expr,
+		NextTime: expr.Next(time.Now()),
+	}
+	return
 }
