@@ -36,6 +36,13 @@ func (scheduler *Scheduler) handleJobEvent(jobEvent *common.JobEvent) {
 	}
 }
 
+// 尝试执行任务
+func (scheduler *Scheduler) TryStartJob() (jobPlan *common.JobSchedulerPlan) {
+	//调度和执行是两件事情
+	
+	return
+}
+
 // 计算任务调度状态
 func (scheduler *Scheduler) TrySchedule() (scheduleAfter time.Duration) {
 	var (
@@ -54,6 +61,7 @@ func (scheduler *Scheduler) TrySchedule() (scheduleAfter time.Duration) {
 	for _, jobPlan = range scheduler.jobPlanTable {
 		if jobPlan.NextTime.Before(now) || jobPlan.NextTime.Equal(now) {
 			//TODO 尝试执行任务
+			scheduler.TryStartJob(jobPlan)
 			fmt.Println("执行任务", jobPlan.Job.Name)
 			jobPlan.NextTime = jobPlan.Expr.Next(now) //更新下次执行时间
 		}
