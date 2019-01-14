@@ -12,7 +12,21 @@ var (
 )
 //调度协程
 func (scheduler *Scheduler) schedulerLoop() {
+	var (
+		jobEvent *common.JobEvent
+	)
+	for {
+		select {
+		case <-scheduler.jobEventChan: //监听任务变化事件
+		
+		
+		}
+	}
+}
 
+// 推送任务变化事件
+func (scheduler *Scheduler) PushJobEvent(jobEvent *common.JobEvent) {
+	scheduler.jobEventChan <- jobEvent
 }
 
 //初始化调度器

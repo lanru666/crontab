@@ -45,6 +45,7 @@ func (JobMgr *JobMgr) watchJobs() (err error) {
 			//TODO:把job赋值给scheduler(调度协程)
 			jobEvent = common.BuildJobEvent(common.JOB_EVENT_SAVE, job)
 			fmt.Println(jobEvent)
+			G_scheduler.PushJobEvent(jobEvent)
 		}
 	}
 	// 2、从该revision向后监听变化事件
@@ -58,7 +59,6 @@ func (JobMgr *JobMgr) watchJobs() (err error) {
 			for _, watchEvent = range watchResp.Events {
 				switch watchEvent.Type {
 				case mvccpb.PUT: //任务保存事件
-					//TODO:反序列化job，推送给scheduler
 					if job, err = common.UnpackJob(watchEvent.Kv.Value); err != nil {
 						continue
 					}
@@ -71,7 +71,8 @@ func (JobMgr *JobMgr) watchJobs() (err error) {
 					job = &common.Job{Name: jobName}
 					jobEvent = common.BuildJobEvent(common.JOB_EVENT_DELETE, job)
 				}
-				//TODO:推给scheduler
+				//变化推给scheduler
+				G_scheduler.PushJobEvent(jobEvent)
 				fmt.Println(jobEvent)
 			}
 		}
