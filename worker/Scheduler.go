@@ -68,7 +68,7 @@ func (scheduler *Scheduler) TrySchedule() (scheduleAfter time.Duration) {
 	//2、过期的任务立即执行
 	
 	//3、统计最近的要过期的任务的时间(N秒后过期)
-	
+	return
 }
 
 // 调度协程
