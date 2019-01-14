@@ -24,7 +24,6 @@ func (scheduler *Scheduler) handleJobEvent(jobEvent *common.JobEvent) {
 			return
 		}
 		scheduler.jobPlanTable[jobEvent.Job.Name] = jobSchedulerPlan
-	
 	//jobEvent.Job
 	case common.JOB_EVENT_DELETE: //删除任务事件
 		if jobSchedulerPlan, jobExisted = scheduler.jobPlanTable[jobEvent.Job.Name]; jobExisted {
@@ -56,6 +55,7 @@ func (scheduler *Scheduler) PushJobEvent(jobEvent *common.JobEvent) {
 func initScheduler() {
 	G_scheduler = &Scheduler{
 		jobEventChan: make(chan *common.JobEvent, 1000),
+		jobPlanTable: make(map[string]*common.JobSchedulerPlan),
 	}
 	//启动调度协程
 	go G_scheduler.schedulerLoop()
