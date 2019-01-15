@@ -10,6 +10,7 @@ import (
 type Scheduler struct {
 	jobEventChan chan *common.JobEvent               // etcd事件队列
 	jobPlanTable map[string]*common.JobSchedulerPlan //任务调度计划表
+	jobExecutingTable map[string]*common.JobSchedulerPlan //任务执行表
 }
 
 var (
@@ -39,6 +40,8 @@ func (scheduler *Scheduler) handleJobEvent(jobEvent *common.JobEvent) {
 // 尝试执行任务
 func (scheduler *Scheduler) TryStartJob() (jobPlan *common.JobSchedulerPlan) {
 	//调度和执行是两件事情
+	
+	//执行的任务可能运行很久,1分钟会调度60次，但是只执行1次
 	
 	return
 }
