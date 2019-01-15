@@ -29,6 +29,8 @@ func (executor *Executor) ExecuteJob(info *common.JobExecuteInfo) {
 			ExecuteInfo: info,
 			OutPut:      make([]byte, 0),
 		}
+		// 首先获取分布式锁
+		
 		// 记录任务开始时间
 		result.StartTime = time.Now()
 		// 执行shell命令

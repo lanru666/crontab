@@ -129,7 +129,7 @@ func (scheduler *Scheduler) schedulerLoop() {
 func (scheduler *Scheduler) handleJobResult(result *common.JobExecuteResult) {
 	//删除执行状态,从执行表删除
 	delete(scheduler.jobExecutingTable, result.ExecuteInfo.Job.Name)
-	
+	fmt.Println("任务执行完成", result.ExecuteInfo.Job.Name, result.OutPut, result.Err)
 }
 
 // 推送任务变化事件
