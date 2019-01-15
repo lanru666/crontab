@@ -74,6 +74,8 @@ type JobExecuteResult struct {
 	ExecuteInfo *JobExecuteInfo //执行状态
 	OutPut      []byte          //脚本输出
 	Err         error           //脚本错误原因
+	StartTime   time.Time       //启动时间
+	EndTime     time.Time       //结束时间
 }
 
 type JobEvent struct {
