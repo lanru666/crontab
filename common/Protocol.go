@@ -101,13 +101,11 @@ func BuildJobSchedulerPlan(job *Job) (jobSchedulerPLan *JobSchedulerPlan, err er
 }
 
 //构造执行状态信息
-func BuildJobExecuteInfo(jobSchedulePlan *JobSchedulerPlan) (jobExecuteInfo *JobExecuteInfo, err error) {
+func BuildJobExecuteInfo(jobSchedulePlan *JobSchedulerPlan) (jobExecuteInfo *JobExecuteInfo) {
 	jobExecuteInfo = &JobExecuteInfo{
 		Job:      jobSchedulePlan.Job,
 		PlanTime: jobSchedulePlan.NextTime, //计划调度时间
 		RealTime: time.Now(),               //真实调度时间
 	}
-	
-	
 	return
 }

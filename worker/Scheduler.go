@@ -40,8 +40,21 @@ func (scheduler *Scheduler) handleJobEvent(jobEvent *common.JobEvent) {
 // 尝试执行任务
 func (scheduler *Scheduler) TryStartJob(jobPlan *common.JobSchedulerPlan) {
 	//调度和执行是两件事情
+	var (
+		jobExecuteInfo *common.JobExecuteInfo
+		jobExecuting   bool
+	)
+	//执行的任务可能运行很久,1分钟会调度60次，但是只能执行1次,防止并发
 	
-	//执行的任务可能运行很久,1分钟会调度60次，但是只执行1次
+	//如果任务正在执行，跳过本次调度
+	if jobExecuteInfo, jobExecuting = scheduler.jobExecutingTable[jobPlan.Job.Name]; jobExecuting {
+		return
+	}
+	// 构建执行状态信息
+	jobExecuteInfo = common.BuildJobExecuteInfo(jobPlan)
+	// 保存执行状态
+	scheduler.jobExecutingTable[jobPlan.Job.Name] = jobExecuteInfo
+	// 执行任务
 	
 	return
 }
