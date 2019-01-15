@@ -32,7 +32,6 @@ func (jobLock *JobLock) TryLock() (err error) {
 		cancelFunc     context.CancelFunc
 		leaseId        clientv3.LeaseID
 		keepRespChan   <-chan *clientv3.LeaseKeepAliveResponse //只读chan
-	
 	)
 	// 1、创建租约(5秒)
 	if leaseGrantResp, err = jobLock.lease.Grant(context.TODO(), 5); err != nil {
@@ -46,6 +45,21 @@ func (jobLock *JobLock) TryLock() (err error) {
 	if keepRespChan, err = jobLock.lease.KeepAlive(cancelCtx, leaseId); err != nil {
 		goto FAIL
 	}
+	//3、处理续租应答的协程
+	go func() {
+		var (
+			keepResp *clientv3.LeaseKeepAliveResponse
+		)
+		for {
+			select {
+			case keepResp = <-keepRespChan: // 自动续租的应答
+				if keepResp == nil {
+					goto END
+				}
+			}
+		}
+	END:
+	}()
 	//3、创建事务txn
 	
 	//4、事务抢锁
