@@ -11,6 +11,7 @@ type Scheduler struct {
 	jobEventChan      chan *common.JobEvent               // etcd事件队列
 	jobPlanTable      map[string]*common.JobSchedulerPlan //任务调度计划表
 	jobExecutingTable map[string]*common.JobExecuteInfo   //任务执行表
+	jobResultChan     chan *common.JobExecuteResult       //任务执行结果
 }
 
 var (
@@ -102,6 +103,7 @@ func (scheduler *Scheduler) schedulerLoop() {
 		jobEvent      *common.JobEvent
 		scheduleAfter time.Duration
 		scheduleTimer *time.Timer
+		jobResult     *common.JobExecuteResult
 	)
 	// 初始化一次(1秒)
 	scheduleAfter = scheduler.TrySchedule()
@@ -113,6 +115,7 @@ func (scheduler *Scheduler) schedulerLoop() {
 			//对内存中维护的任务列表做增删改查
 			scheduler.handleJobEvent(jobEvent)
 		case <-scheduleTimer.C: //最近的任务到期了
+		case jobResult = <-scheduler.jobResultChan: //监听任务执行结果
 		
 		}
 		//调度一次任务
@@ -133,8 +136,14 @@ func InitScheduler() (err error) {
 		jobEventChan:      make(chan *common.JobEvent, 1000),
 		jobPlanTable:      make(map[string]*common.JobSchedulerPlan),
 		jobExecutingTable: make(map[string]*common.JobExecuteInfo),
+		jobResultChan:     make(chan *common.JobExecuteResult, 1000),
 	}
 	//启动调度协程
 	go G_scheduler.schedulerLoop()
 	return
+}
+
+// 回传任务执行结果
+func (scheduler *Scheduler) PushJobResult(jobResult *common.JobExecuteResult) {
+	scheduler.jobResultChan <- jobResult
 }
