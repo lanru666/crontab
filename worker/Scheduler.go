@@ -48,7 +48,7 @@ func (scheduler *Scheduler) TryStartJob(jobPlan *common.JobSchedulerPlan) {
 	
 	//如果任务正在执行，跳过本次调度
 	if jobExecuteInfo, jobExecuting = scheduler.jobExecutingTable[jobPlan.Job.Name]; jobExecuting {
-		fmt.Println("跳过执行")
+		fmt.Println("尚未退出,跳过执行")
 		return
 	}
 	// 构建执行状态信息
