@@ -37,7 +37,7 @@ func (scheduler *Scheduler) handleJobEvent(jobEvent *common.JobEvent) {
 	}
 }
 
-// 尝试执行任务
+// 尝试执行任务，一个一个执行
 func (scheduler *Scheduler) TryStartJob(jobPlan *common.JobSchedulerPlan) {
 	//调度和执行是两件事情
 	var (
@@ -56,7 +56,7 @@ func (scheduler *Scheduler) TryStartJob(jobPlan *common.JobSchedulerPlan) {
 	// 保存执行状态
 	scheduler.jobExecutingTable[jobPlan.Job.Name] = jobExecuteInfo
 	// 执行任务
-	//TODO
+	G_executor.ExecuteJob(jobExecuteInfo)
 	fmt.Println("执行任务", jobExecuteInfo.Job.Name, jobExecuteInfo.PlanTime, jobExecuteInfo.RealTime)
 	return
 }
