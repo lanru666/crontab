@@ -69,6 +69,13 @@ func ExtractJobName(jobKey string) (string) {
 	return strings.TrimPrefix(jobKey, JOB_SAVE_DIR)
 }
 
+//任务执行结果
+type JobExecuteResult struct {
+	ExecuteInfo *JobExecuteInfo //执行状态
+	OutPut      []byte          //脚本输出
+	Err         error           //脚本错误原因
+}
+
 type JobEvent struct {
 	EventType int // SAVE DELETE
 	Job       *Job
