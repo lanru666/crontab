@@ -55,7 +55,8 @@ func (scheduler *Scheduler) TryStartJob(jobPlan *common.JobSchedulerPlan) {
 	// 保存执行状态
 	scheduler.jobExecutingTable[jobPlan.Job.Name] = jobExecuteInfo
 	// 执行任务
-	
+	//TODO
+	fmt.Println("执行任务", jobExecuteInfo.Job.Name, jobExecuteInfo.PlanTime, jobExecuteInfo.RealTime)
 	return
 }
 
