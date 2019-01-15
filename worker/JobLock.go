@@ -2,6 +2,7 @@ package worker
 
 import (
 	"context"
+	"github.com/lanru666/crontab/common"
 	"go.etcd.io/etcd/clientv3"
 )
 
@@ -32,6 +33,9 @@ func (jobLock *JobLock) TryLock() (err error) {
 		cancelFunc     context.CancelFunc
 		leaseId        clientv3.LeaseID
 		keepRespChan   <-chan *clientv3.LeaseKeepAliveResponse //只读chan
+		txn            clientv3.Txn
+		lockKey        string
+		txtResp        *clientv3.TxnResponse
 	)
 	// 1、创建租约(5秒)
 	if leaseGrantResp, err = jobLock.lease.Grant(context.TODO(), 5); err != nil {
@@ -61,9 +65,15 @@ func (jobLock *JobLock) TryLock() (err error) {
 	END:
 	}()
 	//4、创建事务txn
-	
+	txn = jobLock.kv.Txn(context.TODO())
+	// 锁路径
+	lockKey = common.JOB_LOCK_DIR + jobLock.jobName
 	//5、事务抢锁
-	
+	txn.If(clientv3.Compare(clientv3.CreateRevision(lockKey), "=", 0)).Then(clientv3.OpPut(lockKey, "", clientv3.WithLease(leaseId))).Else(clientv3.OpGet(lockKey))
+	// 提交事务
+	if txtResp, err = txn.Commit(); err != nil {
+		goto FAIL
+	}
 	//6、成功返回，失败释放租约
 FAIL:
 	cancelFunc()                                  //取消自动续租
