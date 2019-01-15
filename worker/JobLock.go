@@ -75,7 +75,7 @@ func (jobLock *JobLock) TryLock() (err error) {
 		goto FAIL
 	}
 	//6、成功返回，失败释放租约
-	if txnResp.Succeeded { //锁被占用
+	if !txnResp.Succeeded { //锁被占用
 		goto FAIL
 	}
 FAIL:
