@@ -62,7 +62,7 @@ func (scheduler *Scheduler) TryStartJob(jobPlan *common.JobSchedulerPlan) {
 }
 
 // 计算任务调度状态
-func (scheduler *Scheduler) TrySchedule(jobSchedulePlan *common.JobSchedulerPlan) (scheduleAfter time.Duration) {
+func (scheduler *Scheduler) TrySchedule() (scheduleAfter time.Duration) {
 	var (
 		jobPlan  *common.JobSchedulerPlan
 		now      time.Time
