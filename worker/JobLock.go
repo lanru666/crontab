@@ -60,11 +60,11 @@ func (jobLock *JobLock) TryLock() (err error) {
 		}
 	END:
 	}()
-	//3、创建事务txn
+	//4、创建事务txn
 	
-	//4、事务抢锁
+	//5、事务抢锁
 	
-	//5、成功返回，失败释放租约
+	//6、成功返回，失败释放租约
 FAIL:
 	cancelFunc()                                  //取消自动续租
 	jobLock.lease.Revoke(context.TODO(), leaseId) // 释放租约
