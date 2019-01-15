@@ -57,6 +57,7 @@ func (scheduler *Scheduler) TryStartJob(jobPlan *common.JobSchedulerPlan) {
 	// 保存执行状态
 	scheduler.jobExecutingTable[jobPlan.Job.Name] = jobExecuteInfo
 	// 执行任务
+	fmt.Println("执行任务", jobExecuteInfo.Job.Name, jobExecuteInfo.PlanTime, jobExecuteInfo.RealTime)
 	G_executor.ExecuteJob(jobExecuteInfo)
 	return
 }
@@ -116,13 +117,19 @@ func (scheduler *Scheduler) schedulerLoop() {
 			scheduler.handleJobEvent(jobEvent)
 		case <-scheduleTimer.C: //最近的任务到期了
 		case jobResult = <-scheduler.jobResultChan: //监听任务执行结果
-		
+			scheduler.handleJobResult(jobResult)
 		}
 		//调度一次任务
 		scheduleAfter = scheduler.TrySchedule()
 		//重置调度间隔
 		scheduleTimer.Reset(scheduleAfter)
 	}
+}
+
+func (scheduler *Scheduler) handleJobResult(result *common.JobExecuteResult) {
+	//删除执行状态,从执行表删除
+	delete(scheduler.jobExecutingTable, result.ExecuteInfo.Job.Name)
+	
 }
 
 // 推送任务变化事件
