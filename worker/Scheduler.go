@@ -8,9 +8,9 @@ import (
 
 //调度协程 负责任务调度
 type Scheduler struct {
-	jobEventChan chan *common.JobEvent               // etcd事件队列
-	jobPlanTable map[string]*common.JobSchedulerPlan //任务调度计划表
-	jobExecutingTable map[string]*common.JobSchedulerPlan //任务执行表
+	jobEventChan      chan *common.JobEvent               // etcd事件队列
+	jobPlanTable      map[string]*common.JobSchedulerPlan //任务调度计划表
+	jobExecutingTable map[string]*common.JobExecuteInfo   //任务执行表
 }
 
 var (
@@ -38,7 +38,7 @@ func (scheduler *Scheduler) handleJobEvent(jobEvent *common.JobEvent) {
 }
 
 // 尝试执行任务
-func (scheduler *Scheduler) TryStartJob() (jobPlan *common.JobSchedulerPlan) {
+func (scheduler *Scheduler) TryStartJob(jobPlan *common.JobSchedulerPlan) {
 	//调度和执行是两件事情
 	
 	//执行的任务可能运行很久,1分钟会调度60次，但是只执行1次
@@ -47,7 +47,7 @@ func (scheduler *Scheduler) TryStartJob() (jobPlan *common.JobSchedulerPlan) {
 }
 
 // 计算任务调度状态
-func (scheduler *Scheduler) TrySchedule() (scheduleAfter time.Duration) {
+func (scheduler *Scheduler) TrySchedule(jobSchedulePlan *common.JobSchedulerPlan) (scheduleAfter time.Duration) {
 	var (
 		jobPlan  *common.JobSchedulerPlan
 		now      time.Time
@@ -116,8 +116,9 @@ func (scheduler *Scheduler) PushJobEvent(jobEvent *common.JobEvent) {
 //初始化调度器
 func InitScheduler() (err error) {
 	G_scheduler = &Scheduler{
-		jobEventChan: make(chan *common.JobEvent, 1000),
-		jobPlanTable: make(map[string]*common.JobSchedulerPlan),
+		jobEventChan:      make(chan *common.JobEvent, 1000),
+		jobPlanTable:      make(map[string]*common.JobSchedulerPlan),
+		jobExecutingTable: make(map[string]*common.JobExecuteInfo),
 	}
 	//启动调度协程
 	go G_scheduler.schedulerLoop()
