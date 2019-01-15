@@ -35,7 +35,7 @@ func (jobLock *JobLock) TryLock() (err error) {
 		keepRespChan   <-chan *clientv3.LeaseKeepAliveResponse //只读chan
 		txn            clientv3.Txn
 		lockKey        string
-		txtResp        *clientv3.TxnResponse
+		txnResp        *clientv3.TxnResponse
 	)
 	// 1、创建租约(5秒)
 	if leaseGrantResp, err = jobLock.lease.Grant(context.TODO(), 5); err != nil {
@@ -71,10 +71,13 @@ func (jobLock *JobLock) TryLock() (err error) {
 	//5、事务抢锁
 	txn.If(clientv3.Compare(clientv3.CreateRevision(lockKey), "=", 0)).Then(clientv3.OpPut(lockKey, "", clientv3.WithLease(leaseId))).Else(clientv3.OpGet(lockKey))
 	// 提交事务
-	if txtResp, err = txn.Commit(); err != nil {
+	if txnResp, err = txn.Commit(); err != nil {
 		goto FAIL
 	}
 	//6、成功返回，失败释放租约
+	if txnResp.Succeeded { //锁被占用
+		goto FAIL
+	}
 FAIL:
 	cancelFunc()                                  //取消自动续租
 	jobLock.lease.Revoke(context.TODO(), leaseId) // 释放租约
