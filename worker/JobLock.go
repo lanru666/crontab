@@ -13,6 +13,8 @@ type JobLock struct {
 	lease      clientv3.Lease
 	jobName    string             //锁哪个任务
 	cancelFunc context.CancelFunc //用于终止自动续租
+	leaseId    clientv3.LeaseID   //租约ID
+	isLocked   bool               //是否上锁成功
 }
 
 // 初始化一把锁
@@ -76,15 +78,24 @@ func (jobLock *JobLock) TryLock() (err error) {
 	}
 	//6、成功返回，失败释放租约
 	if !txnResp.Succeeded { //锁被占用
+		err = common.ERR_LOCK_ALREADY_REQUIRED
 		goto FAIL
 	}
+	// 抢锁成功
+	jobLock.leaseId = leaseId
+	jobLock.cancelFunc = cancelFunc
+	return
 FAIL:
 	cancelFunc()                                  //取消自动续租
 	jobLock.lease.Revoke(context.TODO(), leaseId) // 释放租约
+	jobLock.isLocked = true
 	return
 }
 
 //释放锁
 func (jobLock *JobLock) Unlock() {
-	
+	if jobLock.isLocked {
+		jobLock.cancelFunc()
+		jobLock.lease.Revoke(context.TODO(), jobLock.leaseId)
+	}
 }
