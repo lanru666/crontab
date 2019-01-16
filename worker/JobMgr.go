@@ -22,7 +22,7 @@ var (
 	G_jobMgr *JobMgr
 )
 //监听任务变化
-func (JobMgr *JobMgr) watchJobs() (err error) {
+func (jobMgr *JobMgr) watchJobs() (err error) {
 	// 1、get一下/cron/jobs/目录下的所有任务，并且获取当前集群的revision
 	var (
 		getResp            *clientv3.GetResponse
@@ -35,7 +35,7 @@ func (JobMgr *JobMgr) watchJobs() (err error) {
 		jobName            string
 		jobEvent           *common.JobEvent
 	)
-	if getResp, err = JobMgr.kv.Get(context.TODO(), common.JOB_SAVE_DIR, clientv3.WithPrefix()); err != nil {
+	if getResp, err = jobMgr.kv.Get(context.TODO(), common.JOB_SAVE_DIR, clientv3.WithPrefix()); err != nil {
 		return
 	}
 	// 当前有哪些任务
@@ -53,7 +53,7 @@ func (JobMgr *JobMgr) watchJobs() (err error) {
 		// 从GET时刻的后续版本开始监听变化
 		watchStartRevision = getResp.Header.Revision + 1
 		//监听/cron/jobs/目录的后续变化
-		watchChan = JobMgr.watcher.Watch(context.TODO(), common.JOB_SAVE_DIR, clientv3.WithRev(watchStartRevision), clientv3.WithPrefix())
+		watchChan = jobMgr.watcher.Watch(context.TODO(), common.JOB_SAVE_DIR, clientv3.WithRev(watchStartRevision), clientv3.WithPrefix())
 		//处理监听事件
 		for watchResp = range watchChan {
 			for _, watchEvent = range watchResp.Events {
@@ -112,6 +112,8 @@ func InitJobMgr() (err error) {
 	}
 	//启动监听
 	G_jobMgr.watchJobs()
+	//启动监听killer
+	G_jobMgr.watchKiller()
 	return
 }
 
@@ -147,6 +149,8 @@ func (jobMgr *JobMgr) watchKiller() {
 						Name: jobName,
 					}
 					jobEvent = common.BuildJobEvent(common.JOB_EVENT_KILL, job)
+					//推给scheduler
+					G_scheduler.PushJobEvent(jobEvent)
 				case mvccpb.DELETE: //killer标记过期，被自动删除
 				
 				}
