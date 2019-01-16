@@ -1,6 +1,7 @@
 package common
 
 import (
+	"context"
 	"encoding/json"
 	"github.com/gorhill/cronexpr"
 	"strings"
@@ -23,9 +24,11 @@ type JobSchedulerPlan struct {
 
 // 任务执行状态
 type JobExecuteInfo struct {
-	Job      *Job      //任务信息
-	PlanTime time.Time //理论上的调度时间
-	RealTime time.Time //实际的调度时间
+	Job        *Job               //任务信息
+	PlanTime   time.Time          //理论上的调度时间
+	RealTime   time.Time          //实际的调度时间
+	CancelCtx  context.Context    //任务command的context
+	CancelFunc context.CancelFunc //用于取消任务的函数
 }
 
 //HTTP接口应答
@@ -121,5 +124,6 @@ func BuildJobExecuteInfo(jobSchedulePlan *JobSchedulerPlan) (jobExecuteInfo *Job
 		PlanTime: jobSchedulePlan.NextTime, //计划调度时间
 		RealTime: time.Now(),               //真实调度时间
 	}
+	jobExecuteInfo.CancelCtx, jobExecuteInfo.CancelFunc = context.WithCancel(context.TODO())
 	return
 }

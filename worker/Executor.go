@@ -1,7 +1,6 @@
 package worker
 
 import (
-	"context"
 	"github.com/lanru666/crontab/common"
 	"os/exec"
 	"time"
@@ -44,7 +43,7 @@ func (executor *Executor) ExecuteJob(info *common.JobExecuteInfo) {
 			// 上锁成功后,重置任务启动时间
 			result.StartTime = time.Now()
 			// 执行shell命令
-			cmd = exec.CommandContext(context.TODO(), "/bin/bash", "-c", info.Job.Command)
+			cmd = exec.CommandContext(info.CancelCtx, "/bin/bash", "-c", info.Job.Command)
 			// 执行并捕获输出
 			output, err = cmd.CombinedOutput()
 			// 记录任务结束时间

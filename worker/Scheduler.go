@@ -35,6 +35,9 @@ func (scheduler *Scheduler) handleJobEvent(jobEvent *common.JobEvent) {
 		if jobSchedulerPlan, jobExisted = scheduler.jobPlanTable[jobEvent.Job.Name]; jobExisted {
 			delete(scheduler.jobPlanTable, jobEvent.Job.Name)
 		}
+	case common.JOB_EVENT_KILL: //强杀任务事件
+	
+		
 	}
 }
 
