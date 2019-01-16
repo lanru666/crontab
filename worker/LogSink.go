@@ -19,7 +19,7 @@ var (
 	G_logSink *LogSink
 )
 
-func InitLogSink(err error) {
+func InitLogSink() (err error) {
 	var (
 		client *mongo.Client
 		option *options.ClientOptions
@@ -36,9 +36,21 @@ func InitLogSink(err error) {
 		logChan:       make(chan *common.JobLog, 1000),
 	}
 	//启动mongodbc处理协程
+	go G_logSink.writeLoop()
+	return
 }
 
 //日志存储协程
 func (logSink *LogSink) writeLoop() {
-
+	var (
+		log *common.JobLog
+	)
+	for {
+		select {
+		case log = <-logSink.logChan:
+			//把这条log写到mongodb中
+			//logSink.logCollection.insertOne()
+			
+		}
+	}
 }
