@@ -155,8 +155,12 @@ func (scheduler *Scheduler) handleJobResult(result *common.JobExecuteResult) {
 	}
 	if result.Err != nil {
 		jobLog.Err = result.Err.Error()
+	} else {
+		jobLog.Err = ""
 	}
-	fmt.Println("任务执行完成", result.ExecuteInfo.Job.Name, result.OutPut, result.Err)
+	// TODO:存储到MonogoDb
+	
+	//fmt.Println("任务执行完成", result.ExecuteInfo.Job.Name, result.OutPut, result.Err)
 }
 
 // 推送任务变化事件
