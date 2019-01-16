@@ -2,6 +2,7 @@ package worker
 
 import (
 	"github.com/lanru666/crontab/common"
+	"math/rand"
 	"os/exec"
 	"time"
 )
@@ -33,6 +34,9 @@ func (executor *Executor) ExecuteJob(info *common.JobExecuteInfo) {
 		jobLock = G_jobMgr.CreateJobLock(info.Job.Name)
 		// 记录任务开始时间
 		result.StartTime = time.Now()
+		// 上锁
+		// 随机睡眠0~1秒
+		time.Sleep(time.Duration(rand.Intn(1000)) * time.Millisecond)
 		err = jobLock.TryLock()
 		defer jobLock.Unlock() //释放锁
 		if err != nil { //上锁失败
