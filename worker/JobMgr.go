@@ -129,6 +129,8 @@ func (jobMgr *JobMgr) watchKiller() {
 		watchResp  clientv3.WatchResponse
 		watchEvent *clientv3.Event
 		jobEvent   *common.JobEvent
+		jobName    string
+		job        *common.Job
 	)
 	//监听/cron
 	go func() { //监听协程
@@ -139,9 +141,13 @@ func (jobMgr *JobMgr) watchKiller() {
 		for watchResp = range watchChan {
 			for _, watchEvent = range watchResp.Events {
 				switch watchEvent.Type {
-				case mvccpb.PUT: //杀死任务的事件
-				
-				case mvccpb.DELETE: //killer标记过期
+				case mvccpb.PUT:                                                  //杀死任务的事件
+					jobName = common.ExtractKillerName(string(watchEvent.Kv.Key)) //cron/killer/job10
+					job = &common.Job{
+						Name: jobName,
+					}
+					jobEvent = common.BuildJobEvent(common.JOB_EVENT_KILL, job)
+				case mvccpb.DELETE: //killer标记过期，被自动删除
 				
 				}
 				//变化推给scheduler

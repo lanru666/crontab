@@ -69,6 +69,11 @@ func ExtractJobName(jobKey string) (string) {
 	return strings.TrimPrefix(jobKey, JOB_SAVE_DIR)
 }
 
+// /cron/killer/job10,抹掉/cron/killer/
+func ExtractKillerName(killerKey string) (string) {
+	return strings.TrimPrefix(killerKey, JOB_KILL_DIR)
+}
+
 //任务执行结果
 type JobExecuteResult struct {
 	ExecuteInfo *JobExecuteInfo //执行状态
