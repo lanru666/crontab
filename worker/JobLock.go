@@ -84,11 +84,12 @@ func (jobLock *JobLock) TryLock() (err error) {
 	// 抢锁成功
 	jobLock.leaseId = leaseId
 	jobLock.cancelFunc = cancelFunc
+	jobLock.isLocked = true
+	
 	return
 FAIL:
 	cancelFunc()                                  //取消自动续租
 	jobLock.lease.Revoke(context.TODO(), leaseId) // 释放租约
-	jobLock.isLocked = true
 	return
 }
 
