@@ -33,7 +33,6 @@ func (executor *Executor) ExecuteJob(info *common.JobExecuteInfo) {
 		jobLock = G_jobMgr.CreateJobLock(info.Job.Name)
 		// 记录任务开始时间
 		result.StartTime = time.Now()
-		
 		err = jobLock.TryLock()
 		defer jobLock.Unlock() //释放锁
 		if err != nil { //上锁失败
